@@ -1,4 +1,5 @@
-FROM php:7.0
+ARG BASE_IMAGE=php:7.0
+FROM ${BASE_IMAGE}
 MAINTAINER Kang Ki Tae <kt.kang@ridi.com>
 
 RUN docker-php-source extract \
@@ -9,6 +10,13 @@ RUN docker-php-source extract \
   wget software-properties-common openssh-client git mysql-client zlib1g-dev libmcrypt-dev libldap2-dev \
 && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
 && docker-php-ext-install ldap zip mysqli pdo pdo_mysql \
+
+# Install mysql
+&& echo 'mysql-server mysql-server/root_password password root' | debconf-set-selections \
+&& echo 'mysql-server mysql-server/root_password_again password root' | debconf-set-selections \
+&& apt-get install mysql-server -y \
+&& sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/mysql/my.cnf \
+&& sed -i '/max_connections/a max_connections = 3000' /etc/mysql/my.cnf \
 
 # Install xdebug php extention
 && pecl config-set preferred_state beta \
