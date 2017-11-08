@@ -2,6 +2,8 @@ ARG BASE_IMAGE=php:7.0
 FROM ${BASE_IMAGE}
 MAINTAINER Kang Ki Tae <kt.kang@ridi.com>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN docker-php-source extract \
 
 # Install common
@@ -12,8 +14,6 @@ RUN docker-php-source extract \
 && docker-php-ext-install ldap zip mysqli pdo pdo_mysql \
 
 # Install mysql
-&& echo 'mysql-server mysql-server/root_password password root' | debconf-set-selections \
-&& echo 'mysql-server mysql-server/root_password_again password root' | debconf-set-selections \
 && apt-get install mysql-server -y \
 && sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/mysql/my.cnf \
 && sed -i '/max_connections/a max_connections = 3000' /etc/mysql/my.cnf \
