@@ -24,10 +24,18 @@ RUN docker-php-source extract \
 && rm -rf /tmp/pear \
 && pecl config-set preferred_state stable \
 
-# Install node && bower
+# Install node
 && curl -sL https://deb.nodesource.com/setup_6.x | bash - \
 && apt-get install nodejs -y \
+
+# Install bower
 && npm install -g bower \
+
+# Install yarn
+&& curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+&& echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+&& apt-get update \
+&& apt-get install yarn -y \
 
 # Install composer
 && curl -sS https://getcomposer.org/installer | php \
