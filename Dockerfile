@@ -3,47 +3,54 @@ FROM ${BASE_IMAGE}
 MAINTAINER Kang Ki Tae <kt.kang@ridi.com>
 
 ENV DEBIAN_FRONTEND noninteractive
-
-RUN docker-php-source extract \
+ENV DOCKERVERSION=17.12.0-ce
 
 # Install common
+RUN docker-php-source extract \
 && apt-get update \
 && apt-get install -y --no-install-recommends \
-  wget gnupg software-properties-common openssh-client git mysql-client docker zlib1g-dev libmcrypt-dev libldap2-dev \
+  wget gnupg software-properties-common openssh-client git mysql-client zlib1g-dev libmcrypt-dev libldap2-dev \
 && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
-&& docker-php-ext-install ldap zip mysqli pdo pdo_mysql \
+&& docker-php-ext-install ldap zip mysqli pdo pdo_mysql
+
+# Install Docker cli
+RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKERVERSION}.tgz \
+&& mv docker-${DOCKERVERSION}.tgz docker.tgz \
+&& tar xzvf docker.tgz \
+&& mv docker/docker /usr/local/bin \
+&& rm -r docker docker.tgz
 
 # Install mysql
-&& apt-get install mysql-server -y \
+RUN apt-get install mysql-server -y \
 && sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/mysql/my.cnf \
-&& sed -i '/max_connections/a max_connections = 3000' /etc/mysql/my.cnf \
+&& sed -i '/max_connections/a max_connections = 3000' /etc/mysql/my.cnf
 
 # Install xdebug php extention
-&& pecl config-set preferred_state beta \
+RUN pecl config-set preferred_state beta \
 && pecl install -o -f xdebug \
 && rm -rf /tmp/pear \
-&& pecl config-set preferred_state stable \
+&& pecl config-set preferred_state stable
 
 # Install node
-&& curl -sL https://deb.nodesource.com/setup_6.x | bash - \
-&& apt-get install nodejs -y \
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - \
+&& apt-get install nodejs -y
 
 # Install bower
-&& npm install -g bower \
+RUN npm install -g bower
 
 # Install yarn
-&& curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
 && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
 && apt-get update \
-&& apt-get install yarn -y \
+&& apt-get install yarn -y
 
 # Install composer
-&& curl -sS https://getcomposer.org/installer | php \
-&& mv composer.phar /usr/bin/composer \
+RUN curl -sS https://getcomposer.org/installer | php \
+&& mv composer.phar /usr/bin/composer
 
 # Install newman (Postman test runner)
-&& npm install newman --global \
+RUN npm install newman --global
 
 # Clean
-&& apt-get autoclean -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
+RUN apt-get autoclean -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* \
 && docker-php-source delete
