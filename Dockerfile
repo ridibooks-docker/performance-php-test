@@ -9,7 +9,16 @@ ENV DOCKERVERSION=17.12.0-ce
 RUN docker-php-source extract \
 && apt-get update \
 && apt-get install -y --no-install-recommends \
-  wget gnupg software-properties-common openssh-client jq git mysql-client zlib1g-dev libmcrypt-dev libldap2-dev \
+  git \
+  gnupg \
+  jq \
+  libldap2-dev \
+  libmcrypt-dev \
+  mysql-client \
+  openssh-client \
+  software-properties-common \
+  wget \
+  zlib1g-dev \
 && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
 && docker-php-ext-install ldap zip mysqli pdo pdo_mysql
 
@@ -21,7 +30,7 @@ RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${
 && rm -r docker docker.tgz
 
 # Install AWS cli
-RUN curl https://bootstrap.pypa.io/get-pip.py | python \
+RUN curl https://bootstrap.pypa.io/get-pip.py | python3 \
 && pip install awscli --upgrade
 
 # Install mysql
