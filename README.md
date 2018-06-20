@@ -3,6 +3,7 @@ Docker image for CI tests
 
 [![](https://images.microbadger.com/badges/version/ridibooks/performance-php-test.svg)](http://microbadger.com/images/ridibooks/performance-php-test "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/ridibooks/performance-php-test.svg)](http://microbadger.com/images/ridibooks/performance-php-test "Get your own version badge on microbadger.com")
+[![Build Status](https://travis-ci.org/ridibooks-docker/performance-php-test.svg?branch=master)](https://travis-ci.org/ridibooks-docker/performance-php-test)
 
 Test with Gitlab Runner
 -----
